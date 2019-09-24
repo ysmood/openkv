@@ -2,6 +2,7 @@ package openkv
 
 import (
 	"bytes"
+	"encoding/hex"
 
 	"github.com/ysmood/byframe"
 	"github.com/ysmood/kit"
@@ -19,6 +20,8 @@ func NewClient(host, keyFile string) *Client {
 	key, err := crypto.NewPrivateKey(file)
 	kit.E(err)
 
+	kit.Req(host).Post().Body(nil).Do()
+
 	return &Client{
 		host: host,
 		key:  key,
@@ -35,5 +38,22 @@ func (c *Client) SetBytes(key, value []byte) error {
 
 	buf := bytes.NewBuffer(data)
 
-	return kit.Req(c.host).Post().Body(buf).Do()
+	return kit.Req(c.host).Put().Body(buf).Do()
+}
+
+func (c *Client) GetBytes(key []byte) ([]byte, error) {
+	buf, err := kit.Req(c.host + "/" + hex.EncodeToString(key)).Bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	var sig, value []byte
+	byframe.DecodeTuple(buf, &sig, &value)
+
+	err = c.key.Verify(append(key, value...), sig)
+	if err != nil {
+		return nil, err
+	}
+
+	return value, nil
 }
