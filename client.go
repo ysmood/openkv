@@ -46,7 +46,7 @@ func (c *Client) SetBytes(key, value []byte) error {
 
 // GetBytes ...
 func (c *Client) GetBytes(key []byte) ([]byte, error) {
-	buf, err := kit.Req(c.host + "/" + hex.EncodeToString(key)).Bytes()
+	buf, err := kit.Req(c.host + "/" + string(key)).Bytes()
 	if err != nil {
 		return nil, err
 	}
