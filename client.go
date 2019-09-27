@@ -9,18 +9,20 @@ import (
 	"github.com/ysmood/openkv/pkg/crypto"
 )
 
+// Client ...
 type Client struct {
 	host string
 	key  *crypto.PrivateKey
 }
 
+// NewClient ...
 func NewClient(host, keyFile string) *Client {
 	file, err := kit.ReadFile(keyFile)
 	kit.E(err)
 	key, err := crypto.NewPrivateKey(file)
 	kit.E(err)
 
-	kit.Req(host).Post().Body(nil).Do()
+	kit.Req(host).Post().StringBody(hex.EncodeToString(key.PublicHash())).Do()
 
 	return &Client{
 		host: host,
@@ -28,6 +30,7 @@ func NewClient(host, keyFile string) *Client {
 	}
 }
 
+// SetBytes ...
 func (c *Client) SetBytes(key, value []byte) error {
 	sig, err := c.key.Sign(append(key, value...))
 	if err != nil {
@@ -41,6 +44,7 @@ func (c *Client) SetBytes(key, value []byte) error {
 	return kit.Req(c.host).Put().Body(buf).Do()
 }
 
+// GetBytes ...
 func (c *Client) GetBytes(key []byte) ([]byte, error) {
 	buf, err := kit.Req(c.host + "/" + hex.EncodeToString(key)).Bytes()
 	if err != nil {

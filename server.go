@@ -8,6 +8,7 @@ import (
 type Server struct {
 }
 
+// NewServer ...
 func NewServer() *Server {
 	kit.Log("ok")
 

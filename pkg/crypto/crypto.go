@@ -8,9 +8,9 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
-	"encoding/json"
 	"encoding/pem"
-	"io"
+
+	"github.com/vmihailenco/msgpack/v4"
 )
 
 // PrivateKey ...
@@ -45,6 +45,11 @@ func NewPrivateKey(file []byte) (*PrivateKey, error) {
 			public: &key.PublicKey,
 		},
 	}, nil
+}
+
+// PublicHash ...
+func (key *PrivateKey) PublicHash() []byte {
+	return key.public.hash
 }
 
 // Encrypt ...
@@ -118,7 +123,7 @@ func parsePrivateKey(privateKey []byte) (*rsa.PrivateKey, error) {
 
 // hash ...
 func hash(key interface{}) ([]byte, error) {
-	data, err := json.Marshal(key)
+	data, err := msgpack.Marshal(key)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +159,7 @@ func encrypt(key []byte, plaintext []byte) ([]byte, error) {
 
 	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
 	nonce := make([]byte, 12)
-	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+	if _, err := rand.Read(nonce); err != nil {
 		return nil, err
 	}
 
