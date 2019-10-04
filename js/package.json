@@ -1,0 +1,22 @@
+{
+  "name": "openkv",
+  "version": "1.0.0",
+  "description": "openkv js client",
+  "main": "index.js",
+  "scripts": {
+    "test": "no test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ysmood/openkv.git"
+  },
+  "keywords": [
+    "openkv"
+  ],
+  "author": "ysmood.org",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ysmood/openkv/issues"
+  },
+  "homepage": "https://github.com/ysmood/openkv#readme"
+}
